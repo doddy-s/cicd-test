@@ -27,4 +27,4 @@ jobs:
             ./mvnw package
             sudo docker kill ${{ secrets.REPO_NAME }}
             sudo docker build -t ${{ secrets.REPO_NAME }} .
-            sudo docker run -d --name ${{ secrets.REPO_NAME }} 8080:8080 ${{ secrets.REPO_NAME }}
+            sudo docker run -d --name ${{ secrets.REPO_NAME }} -p 8080:8080 ${{ secrets.REPO_NAME }}
