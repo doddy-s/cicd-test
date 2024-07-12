@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloWorld {
     @GetMapping("/")
     public String getHello() {
-        return "Hello there, the cicd works.";
+        return "Hello there, the cicd works. This is the first test of update.";
     }
 }
