@@ -1,0 +1,34 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to server
+        run: |
+          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_IP }} <<EOF
+            mkdir production
+            cd production
+            git clone ${{ secrets.REPO_URL }}
+            cd ${{ secrets.REPO_NAME }}
+            git pull
+            chmod +x mvnw
+            ./mvnw package
+            sudo docker kill ${{ secrets.REPO_NAME }}
+            sudo docker build -t ${{ secrets.REPO_NAME }} .
+            sudo docker run -d --name ${{ secrets.REPO_NAME }} 8080:8080 ${{ secrets.REPO_NAME }}
+          EOF
