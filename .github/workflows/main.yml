@@ -19,8 +19,13 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy to server
-        run: |
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_IP }} <<EOF
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
             mkdir production
             cd production
             git clone ${{ secrets.REPO_URL }}
@@ -31,4 +36,3 @@ jobs:
             sudo docker kill ${{ secrets.REPO_NAME }}
             sudo docker build -t ${{ secrets.REPO_NAME }} .
             sudo docker run -d --name ${{ secrets.REPO_NAME }} 8080:8080 ${{ secrets.REPO_NAME }}
-          EOF
